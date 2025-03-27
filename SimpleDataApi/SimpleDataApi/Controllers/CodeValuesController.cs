@@ -17,11 +17,11 @@ namespace SimpleDataApi.Controllers
         }
 
         [HttpGet]
-        public async Task<PagedResponse<CodeValueResponseDto>> GetAsync([FromQuery] CodeValuePageFilter request)
+        public async Task<PagedResponse<CodeValueResponse>> GetAsync([FromQuery] CodeValuePageFilter request)
         {
-            IReadOnlyCollection<CodeValueResponseDto> codeValuesDto = await codeValuesService.GetCodeValuesAsync(request);
+            IReadOnlyCollection<CodeValueResponse> codeValuesDto = await codeValuesService.GetCodeValuesAsync(request);
 
-            return new PagedResponse<CodeValueResponseDto>(codeValuesDto, codeValuesDto.Count);
+            return new PagedResponse<CodeValueResponse>(codeValuesDto, codeValuesDto.Count);
         }
 
         [HttpPost]

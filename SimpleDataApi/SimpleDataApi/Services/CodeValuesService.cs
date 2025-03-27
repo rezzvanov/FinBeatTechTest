@@ -15,7 +15,7 @@ namespace SimpleDataApi.Services
             this.context = context;
         }
 
-        public async Task<IReadOnlyCollection<CodeValueResponseDto>> GetCodeValuesAsync(CodeValuePageFilter request)
+        public async Task<IReadOnlyCollection<CodeValueResponse>> GetCodeValuesAsync(CodeValuePageFilter request)
         {
             return await context.CodeValues
                 .AsNoTracking()
@@ -23,7 +23,7 @@ namespace SimpleDataApi.Services
                 .AddFilterIfSet(request.MaxCode.HasValue, c => c.Code >= request.MaxCode)
                 .AddFilterIfSet(!string.IsNullOrEmpty(request.ValueStartWith), c => c.Value.StartsWith(request.ValueStartWith))
                 .SelectPage(request.PageSize, request.PageNumber)
-                .Select(c => new CodeValueResponseDto(c.Id, c.Code, c.Value))
+                .Select(c => new CodeValueResponse(c.Id, c.Code, c.Value))
                 .ToListAsync();
         }
 

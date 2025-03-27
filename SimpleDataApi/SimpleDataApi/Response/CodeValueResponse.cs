@@ -1,12 +1,12 @@
 ﻿namespace SimpleDataApi.Response
 {
-    public class CodeValueResponseDto
+    public class CodeValueResponse
     {
         public int Id { get; set; }
         public int Code { get; set; }
         public string Value { get; set; }
 
-        public CodeValueResponseDto(int id, int code, string value)
+        public CodeValueResponse(int id, int code, string value)
         {
             Id = id;
             Code = code;
