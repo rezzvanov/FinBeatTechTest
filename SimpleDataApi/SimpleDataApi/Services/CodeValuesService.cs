@@ -27,7 +27,7 @@ namespace SimpleDataApi.Services
                 .ToListAsync();
         }
 
-        public async Task<int> AddRangeAsync(IEnumerable<CodeValueRequestDto> codeValueDtos)
+        public async Task<int> AddRangeAsync(IEnumerable<CodeValueRequest> codeValueDtos)
         {
             int addedRows = 0;
             IEnumerable<CodeValue> codeValues = MapRequestDtoToEntity(codeValueDtos);
@@ -44,7 +44,7 @@ namespace SimpleDataApi.Services
             return addedRows;
         }
 
-        private static IEnumerable<CodeValue> MapRequestDtoToEntity(IEnumerable<CodeValueRequestDto> codeValueDtos)
+        private static IEnumerable<CodeValue> MapRequestDtoToEntity(IEnumerable<CodeValueRequest> codeValueDtos)
         {
             return codeValueDtos
                 .OrderBy(c => c.Code)

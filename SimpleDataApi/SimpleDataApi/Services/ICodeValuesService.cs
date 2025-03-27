@@ -7,6 +7,6 @@ namespace SimpleDataApi.Services
     {
         public Task<IReadOnlyCollection<CodeValueResponse>> GetCodeValuesAsync(CodeValuePageFilter request);
 
-        public Task<int> AddRangeAsync(IEnumerable<CodeValueRequestDto> dto);
+        public Task<int> AddRangeAsync(IEnumerable<CodeValueRequest> dto);
     }
 }

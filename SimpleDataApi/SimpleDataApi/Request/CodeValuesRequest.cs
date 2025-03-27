@@ -2,6 +2,6 @@
 {
     public class CodeValuesRequest
     {
-        public required List<CodeValueRequestDto> CodeValues { get; set; }
+        public required List<CodeValueRequest> CodeValues { get; set; }
     }
 }
