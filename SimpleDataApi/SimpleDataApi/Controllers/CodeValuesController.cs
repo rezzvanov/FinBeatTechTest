@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SimpleDataApi.Extensions;
 using SimpleDataApi.Request;
+using SimpleDataApi.Response;
 using SimpleDataApi.Storage;
 
 namespace SimpleDataApi.Controllers
@@ -15,6 +17,17 @@ namespace SimpleDataApi.Controllers
         public CodeValuesController(AppDbContext context)
         {
             this.context = context;
+        }
+
+        [HttpGet]
+        public async Task<PagedResponse<CodeValue>> GetAsync([FromQuery] PagedRequest request)
+        {
+            List<CodeValue> codeValues = await context.CodeValues
+                .AsNoTracking()
+                .SelectPage(request.PageSize, request.PageNumber)
+                .ToListAsync();
+
+            return new PagedResponse<CodeValue>(codeValues, codeValues.Count);
         }
 
         [HttpPost]
