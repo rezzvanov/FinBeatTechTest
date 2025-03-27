@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SimpleDataApi.Services;
 using SimpleDataApi.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddScoped<ICodeValuesService, CodeValuesService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
