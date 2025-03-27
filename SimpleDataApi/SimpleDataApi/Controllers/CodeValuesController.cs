@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleDataApi.Request;
-using SimpleDataApi.Response;
+using SimpleDataApi.Requests;
+using SimpleDataApi.Responses;
 using SimpleDataApi.Services;
 
 namespace SimpleDataApi.Controllers
@@ -17,11 +17,11 @@ namespace SimpleDataApi.Controllers
         }
 
         [HttpGet]
-        public async Task<PagedResponse<CodeValueResponse>> GetAsync([FromQuery] CodeValuePageFilter request)
+        public async Task<PagedResponse<CodeValueResponse>> GetAsync([FromQuery] CodeValueFilter request)
         {
-            IReadOnlyCollection<CodeValueResponse> codeValuesDto = await codeValuesService.GetCodeValuesAsync(request);
+            IReadOnlyCollection<CodeValueResponse> codeValues = await codeValuesService.GetAsync(request);
 
-            return new PagedResponse<CodeValueResponse>(codeValuesDto, codeValuesDto.Count);
+            return new PagedResponse<CodeValueResponse>(codeValues, codeValues.Count);
         }
 
         [HttpPost]

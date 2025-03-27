@@ -1,4 +1,4 @@
-﻿namespace SimpleDataApi.Response
+﻿namespace SimpleDataApi.Responses
 {
     public class PagedResponse<T>
     {

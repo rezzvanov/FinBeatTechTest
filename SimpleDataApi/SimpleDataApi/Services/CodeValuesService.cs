@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SimpleDataApi.Extensions;
-using SimpleDataApi.Request;
-using SimpleDataApi.Response;
+using SimpleDataApi.Requests;
+using SimpleDataApi.Responses;
 using SimpleDataApi.Storage;
 
 namespace SimpleDataApi.Services
@@ -15,22 +15,22 @@ namespace SimpleDataApi.Services
             this.context = context;
         }
 
-        public async Task<IReadOnlyCollection<CodeValueResponse>> GetCodeValuesAsync(CodeValuePageFilter request)
+        public async Task<IReadOnlyCollection<CodeValueResponse>> GetAsync(CodeValueFilter filter)
         {
             return await context.CodeValues
                 .AsNoTracking()
-                .AddFilterIfSet(request.MinCode.HasValue, c => c.Code <= request.MinCode)
-                .AddFilterIfSet(request.MaxCode.HasValue, c => c.Code >= request.MaxCode)
-                .AddFilterIfSet(!string.IsNullOrEmpty(request.ValueStartWith), c => c.Value.StartsWith(request.ValueStartWith))
-                .SelectPage(request.PageSize, request.PageNumber)
+                .AddFilterIfSet(filter.MinCode.HasValue, c => c.Code <= filter.MinCode)
+                .AddFilterIfSet(filter.MaxCode.HasValue, c => c.Code >= filter.MaxCode)
+                .AddFilterIfSet(!string.IsNullOrEmpty(filter.ValuePrefix), c => c.Value.StartsWith(filter.ValuePrefix!))
+                .SelectPage(filter.PageSize, filter.PageNumber)
                 .Select(c => new CodeValueResponse(c.Id, c.Code, c.Value))
                 .ToListAsync();
         }
 
-        public async Task<int> AddRangeAsync(IEnumerable<CodeValueRequest> codeValueDtos)
+        public async Task<int> AddRangeAsync(IEnumerable<CodeValueRequest> records)
         {
             int addedRows = 0;
-            IEnumerable<CodeValue> codeValues = MapRequestDtoToEntity(codeValueDtos);
+            IEnumerable<CodeValue> codeValues = MapRequestToEntities(records);
 
             using (var transaction = await context.Database.BeginTransactionAsync())
             {
@@ -44,11 +44,11 @@ namespace SimpleDataApi.Services
             return addedRows;
         }
 
-        private static IEnumerable<CodeValue> MapRequestDtoToEntity(IEnumerable<CodeValueRequest> codeValueDtos)
+        private static IEnumerable<CodeValue> MapRequestToEntities(IEnumerable<CodeValueRequest> records)
         {
-            return codeValueDtos
+            return records
                 .OrderBy(c => c.Code)
-                .Select((c) => new CodeValue(c.Code, c.Value));
+                .Select(c => new CodeValue(c.Code, c.Value));
         }
     }
 }

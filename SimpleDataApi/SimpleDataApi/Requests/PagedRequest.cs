@@ -1,4 +1,4 @@
-﻿namespace SimpleDataApi.Request
+﻿namespace SimpleDataApi.Requests
 {
     public class PagedRequest
     {
