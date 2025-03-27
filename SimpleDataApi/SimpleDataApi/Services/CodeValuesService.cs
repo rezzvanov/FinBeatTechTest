@@ -23,14 +23,14 @@ namespace SimpleDataApi.Services
                 .AddFilterIfSet(request.MaxCode.HasValue, c => c.Code >= request.MaxCode)
                 .AddFilterIfSet(!string.IsNullOrEmpty(request.ValueStartWith), c => c.Value.StartsWith(request.ValueStartWith))
                 .SelectPage(request.PageSize, request.PageNumber)
-                .Select(c => new CodeValueResponseDto(c.Index, c.Code, c.Value))
+                .Select(c => new CodeValueResponseDto(c.Id, c.Code, c.Value))
                 .ToListAsync();
         }
 
         public async Task<int> AddRangeAsync(IEnumerable<CodeValueRequestDto> codeValueDtos)
         {
             int addedRows = 0;
-            IEnumerable<CodeValue> codeValues = MapCodeValuesToIndexed(codeValueDtos);
+            IEnumerable<CodeValue> codeValues = MapRequestDtoToEntity(codeValueDtos);
 
             using (var transaction = await context.Database.BeginTransactionAsync())
             {
@@ -44,11 +44,11 @@ namespace SimpleDataApi.Services
             return addedRows;
         }
 
-        private static IEnumerable<CodeValue> MapCodeValuesToIndexed(IEnumerable<CodeValueRequestDto> codeValueDtos)
+        private static IEnumerable<CodeValue> MapRequestDtoToEntity(IEnumerable<CodeValueRequestDto> codeValueDtos)
         {
             return codeValueDtos
                 .OrderBy(c => c.Code)
-                .Select((c, i) => new CodeValue(i, c.Code, c.Value));
+                .Select((c) => new CodeValue(c.Code, c.Value));
         }
     }
 }

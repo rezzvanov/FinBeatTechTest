@@ -2,13 +2,13 @@
 {
     public class CodeValueResponseDto
     {
-        public int Index { get; set; }
+        public int Id { get; set; }
         public int Code { get; set; }
         public string Value { get; set; }
 
-        public CodeValueResponseDto(int index, int code, string value)
+        public CodeValueResponseDto(int id, int code, string value)
         {
-            Index = index;
+            Id = id;
             Code = code;
             Value = value;
         }
