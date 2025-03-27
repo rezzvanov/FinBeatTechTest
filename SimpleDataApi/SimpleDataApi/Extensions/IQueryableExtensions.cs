@@ -1,4 +1,6 @@
-﻿namespace SimpleDataApi.Extensions
+﻿using System.Linq.Expressions;
+
+namespace SimpleDataApi.Extensions
 {
     public static class IQueryableExtensions
     {
@@ -21,6 +23,14 @@
             }
 
             return query;
+        }
+
+        public static IQueryable<T> AddFilterIfSet<T>(
+            this IQueryable<T> query,
+            bool ifSet,
+            Expression<Func<T, bool>> filter)
+        {
+            return ifSet ? query.Where(filter) : query;
         }
     }
 }

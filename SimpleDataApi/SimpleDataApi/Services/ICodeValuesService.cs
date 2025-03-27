@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SimpleDataApi.Request;
-using SimpleDataApi.Storage;
+﻿using SimpleDataApi.Request;
+using SimpleDataApi.Response;
 
 namespace SimpleDataApi.Services
 {
     public interface ICodeValuesService
     {
-        public Task<IReadOnlyCollection<CodeValueResponseDto>> GetCodeValuesAsync(PagedRequest request);
+        public Task<IReadOnlyCollection<CodeValueResponseDto>> GetCodeValuesAsync(CodeValuePageFilter request);
 
         public Task<int> AddRangeAsync(IEnumerable<CodeValueRequestDto> dto);
     }

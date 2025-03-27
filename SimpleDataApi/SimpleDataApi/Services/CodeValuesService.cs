@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SimpleDataApi.Extensions;
 using SimpleDataApi.Request;
 using SimpleDataApi.Response;
@@ -16,10 +15,13 @@ namespace SimpleDataApi.Services
             this.context = context;
         }
 
-        public async Task<IReadOnlyCollection<CodeValueResponseDto>> GetCodeValuesAsync(PagedRequest request)
+        public async Task<IReadOnlyCollection<CodeValueResponseDto>> GetCodeValuesAsync(CodeValuePageFilter request)
         {
             return await context.CodeValues
                 .AsNoTracking()
+                .AddFilterIfSet(request.MinCode.HasValue, c => c.Code <= request.MinCode)
+                .AddFilterIfSet(request.MaxCode.HasValue, c => c.Code >= request.MaxCode)
+                .AddFilterIfSet(!string.IsNullOrEmpty(request.ValueStartWith), c => c.Value.StartsWith(request.ValueStartWith))
                 .SelectPage(request.PageSize, request.PageNumber)
                 .Select(c => new CodeValueResponseDto(c.Index, c.Code, c.Value))
                 .ToListAsync();
