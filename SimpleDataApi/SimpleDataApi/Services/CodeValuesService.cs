@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleDataApi.Extensions;
 using SimpleDataApi.Request;
+using SimpleDataApi.Response;
 using SimpleDataApi.Storage;
 
 namespace SimpleDataApi.Services
@@ -15,15 +16,16 @@ namespace SimpleDataApi.Services
             this.context = context;
         }
 
-        public async Task<IReadOnlyCollection<CodeValue>> GetCodeValuesAsync(PagedRequest request)
+        public async Task<IReadOnlyCollection<CodeValueResponseDto>> GetCodeValuesAsync(PagedRequest request)
         {
             return await context.CodeValues
                 .AsNoTracking()
                 .SelectPage(request.PageSize, request.PageNumber)
+                .Select(c => new CodeValueResponseDto(c.Index, c.Code, c.Value))
                 .ToListAsync();
         }
 
-        public async Task<int> AddRangeAsync(IEnumerable<CodeValueDto> codeValueDtos)
+        public async Task<int> AddRangeAsync(IEnumerable<CodeValueRequestDto> codeValueDtos)
         {
             int addedRows = 0;
             IEnumerable<CodeValue> codeValues = MapCodeValuesToIndexed(codeValueDtos);
@@ -40,7 +42,7 @@ namespace SimpleDataApi.Services
             return addedRows;
         }
 
-        private static IEnumerable<CodeValue> MapCodeValuesToIndexed(IEnumerable<CodeValueDto> codeValueDtos)
+        private static IEnumerable<CodeValue> MapCodeValuesToIndexed(IEnumerable<CodeValueRequestDto> codeValueDtos)
         {
             return codeValueDtos
                 .OrderBy(c => c.Code)
