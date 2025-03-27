@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SimpleDataApi.Extensions;
+﻿using Microsoft.AspNetCore.Mvc;
 using SimpleDataApi.Request;
 using SimpleDataApi.Response;
+using SimpleDataApi.Services;
 using SimpleDataApi.Storage;
 
 namespace SimpleDataApi.Controllers
@@ -12,20 +10,17 @@ namespace SimpleDataApi.Controllers
     [ApiController]
     public class CodeValuesController : ControllerBase
     {
-        private readonly AppDbContext context;
+        private readonly ICodeValuesService codeValuesService;
 
-        public CodeValuesController(AppDbContext context)
+        public CodeValuesController(ICodeValuesService codeValuesService)
         {
-            this.context = context;
+            this.codeValuesService = codeValuesService;
         }
 
         [HttpGet]
         public async Task<PagedResponse<CodeValue>> GetAsync([FromQuery] PagedRequest request)
         {
-            List<CodeValue> codeValues = await context.CodeValues
-                .AsNoTracking()
-                .SelectPage(request.PageSize, request.PageNumber)
-                .ToListAsync();
+            IReadOnlyCollection<CodeValue> codeValues = await codeValuesService.GetCodeValuesAsync(request);
 
             return new PagedResponse<CodeValue>(codeValues, codeValues.Count);
         }
@@ -33,26 +28,9 @@ namespace SimpleDataApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRangeAsync([FromBody] CodeValuesRequest request)
         {
-            int addedRows = 0;
-            IEnumerable<CodeValue> entities = MapCodeValuesToIndexed(request);
-
-            using (var transaction = await context.Database.BeginTransactionAsync())
-            {
-                await context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE dbo.CodeValues");
-                await context.CodeValues.AddRangeAsync(entities);
-                addedRows = await context.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-            }
+            int addedRows = await codeValuesService.AddRangeAsync(request.CodeValues);
 
             return Ok($"Successfully saved {addedRows} rows");
-        }
-
-        private static IEnumerable<CodeValue> MapCodeValuesToIndexed(CodeValuesRequest request)
-        {
-            return request.CodeValues
-                        .OrderBy(c => c.Code)
-                        .Select((c, i) => new CodeValue(i, c.Code, c.Value));
         }
     }
 }
